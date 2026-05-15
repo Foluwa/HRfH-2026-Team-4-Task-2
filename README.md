@@ -1,13 +1,35 @@
 # HRfH-2026-Team-4-Task-2
-# Final Reslut
+# RESULT
+## Final Result
 <img width="580" height="363" alt="image" src="https://github.com/user-attachments/assets/85f756de-8f85-4fdd-b2e9-5ed6955f0356" />
 
-# 13 Missing Data Datasets + 2 Complete Training/Testing Sets
+## Sensitivity Analysis
+<img width="1488" height="413" alt="image" src="https://github.com/user-attachments/assets/c33599e6-ca77-4032-8312-034dced4659e" />
 
-## Design Rationale
+To validate that our main model\'s robustness is not an artifact of 
+feature engineering or simulator cleanliness, we ran three perturbation 
+experiments:
+
+| Experiment | Modification | Mean accuracy drop at 75% missingness |
+|---|---|---|
+| Main (Phase A) | (control) | ~5% |
+| A: Sensitive features only | 1 feature | ~XX% |
+| B: Fragile features only | Drop max/mean | ~XX% |
+| C: Noisy data | +500 step std | ~XX% |
+
+These experiments show that the main model\'s robustness depends on 
+(1) the breadth of summary features and (2) clean step count data. 
+In noisy clinical settings, we expect degradation closer to 
+Experiment C, suggesting a more cautious accuracy estimate of ~XX% 
+under realistic missingness.
+
+# METHOD
+## Training DATA+ Validation DATA+ Missing DATA
+## 13 Missing Data Datasets + 2 Complete Training/Testing Sets
+
+
 
 This three-phase validation strategy uses **15 datasets total**:
-
 **Phase 1: Train and Lock Model**
 - **Dataset 1 (Training):** `full_recovery_clinical_curves_2026-05-14_complete.csv`
   - 300 participants, 365 days, 0% missing
