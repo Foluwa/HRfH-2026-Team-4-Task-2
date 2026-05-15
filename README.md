@@ -129,8 +129,7 @@ After standardisation (StandardScaler fitted on training only), K-means is train
 | Phase 3 | 21 missing-data CSV files | Sensitivity to missingness | Cohort B with missingness applied |
 
 Critical: the **training cohort (C) is different from the testing cohort (B)**. The Phase 3 missing-data files are derived from Cohort B, so they share the same underlying patients as Phase 2 (just with data removed), but never appear in the training data.
-<img width="462" height="73" alt="image" src="https://github.com/user-attachments/assets/902ad1e1-5385-4007-a174-264ac0d1ddd5" />
-<img width="472" height="63" alt="image" src="https://github.com/user-attachments/assets/8d140111-0c71-42ce-9819-1e270658c996" />
+
 
 
 
@@ -147,10 +146,12 @@ We **lock the model after training** using `joblib.dump()`. All subsequent uses 
 **關鍵：訓練 cohort (C) 跟測試 cohort (B) 不同**。Phase 3 的缺失資料雖然是從 Cohort B 派生的，但跟訓練資料沒接觸過。
 
 我們在訓練後**用 `joblib.dump()` lock 模型**，之後 Phase 2 和 Phase 3 都用 `joblib.load()` + `transform()` + `predict()`，**絕不再 `fit`**，確保模型不會偷偷再學測試資料。
+<img width="467" height="65" alt="image" src="https://github.com/user-attachments/assets/6d375c9f-84c6-46d7-acd8-24fe1f1c254f" />
+
+<img width="472" height="63" alt="image" src="https://github.com/user-attachments/assets/8d140111-0c71-42ce-9819-1e270658c996" />
 
 ### Sensitivity Analysis | 敏感性分析
-
-**English:** To verify that our main result's robustness reflects real model quality rather than artifacts, we develop three perturbation experiments in `Sensitivity_Experiments.ipynb`:
+To verify that our main result's robustness reflects real model quality rather than artifacts, we develop three perturbation experiments in `Sensitivity_Experiments.ipynb`:
 
 | Experiment | Modification | Purpose |
 |---|---|---|
@@ -160,19 +161,20 @@ We **lock the model after training** using `joblib.dump()`. All subsequent uses 
 
 Each experiment is run through the full pipeline (training, external validation, missing-data tests) and the degradation curves are compared against the main Phase A model.
 
-**中文：** 為了驗證主結果的穩健性是真的，不是 artifact，我們在 `Sensitivity_Experiments.ipynb` 設計三個 perturbation 實驗（如上表）。
+為了驗證主結果的穩健性是真的，不是 artifact，我們在 `Sensitivity_Experiments.ipynb` 設計三個 perturbation 實驗（如上表）。
 
 每個實驗都跑完整流程（訓練、外部驗證、缺失資料測試），並把降解曲線跟主 Phase A 對比。
+<img width="1488" height="413" alt="image" src="https://github.com/user-attachments/assets/3675e55c-3c5b-4f25-9e4d-5052bd83f4be" />
 
 ---
 
 ## Results: The Bloopers | 結果：兩個 Bloopers
 
-### Blooper 1: The 8-Feature Failure | 8-特徵失敗
+### Blooper 1: The 8-Feature Failure | 8-特徵失敗===>>>> NEED  TO FIX
 
 #### What went wrong | 問題
 
-**English:** We started with **8 features** chosen by clinical domain knowledge:
+ We started with **8 features** chosen by clinical domain knowledge:
 
 ```
 ['early_speed', 'mid_plateau', 'late_level', 'recovery_slope',
@@ -181,9 +183,10 @@ Each experiment is run through the full pipeline (training, external validation,
 
 We trained K-means on these 8 features and **achieved only 58% accuracy on training data** — suspiciously lower than the 64% on external validation. Normally training accuracy should be the highest because the model has "seen" that data.
 
-**中文：** 我們最初用 domain knowledge 選了 **8 個特徵**（如上）。
+我們最初用 domain knowledge 選了 **8 個特徵**（如上）。
 
 訓練 K-means 之後**只達到 58% accuracy 在訓練資料上** —— 比外部驗證的 64% 還低，這非常異常。通常訓練 accuracy 應該最高，因為模型「看過」那些資料。
+
 
 #### How we detected it | 怎麼發現
 
@@ -224,7 +227,7 @@ We find that `early_speed` is severely skewed:
 
 Fast group's early speed is **55x the moderate group**. After standardisation, fast becomes an extreme outlier and moderate + slow are squashed together.
 
-**中文：** 我們發展了一套**系統性 diagnostic check** 來檢驗特徵：
+ 我們發展了一套**系統性 diagnostic check** 來檢驗特徵：
 
 **Check 1：標準化後的標準差**
 
@@ -268,7 +271,7 @@ feature_cols_v2 = ['early_speed_log', 'mid_plateau', 'late_level',
 
 After this fix, training accuracy jumps from 58% to ~94%. Even more remarkably, the missing-data robustness also improves (see Final Findings below).
 
-**中文：** 我們**移除兩個問題特徵**，並對偏斜特徵做 **log 轉換**（如上程式碼）。
+ 我們**移除兩個問題特徵**，並對偏斜特徵做 **log 轉換**（如上程式碼）。
 
 修正後，訓練 accuracy 從 58% 跳到 ~94%。更值得注意的是，**missing data 的穩健性也大幅改善**（見最終發現）。
 
@@ -276,23 +279,26 @@ After this fix, training accuracy jumps from 58% to ~94%. Even more remarkably, 
 
 #### What we tested | 我們測什麼
 
-**English:** We test whether using the **same cohort for training and testing** would inflate accuracy through data leakage. We train on `1-1_0_complete.csv` (Cohort B) and test on the missing-data versions of Cohort B (which contain the same patients, just with data removed).
+ We test whether using the **same cohort for training and testing** would inflate accuracy through data leakage. We train on `1-1_0_complete.csv` (Cohort B) and test on the missing-data versions of Cohort B (which contain the same patients, just with data removed).
 
-**中文：** 我們測試**訓練跟測試用同 cohort** 會不會因 data leakage 而虛胖 accuracy。訓練在 `1-1_0_complete.csv` (Cohort B)，測試在 Cohort B 的缺失版本（同樣 300 病人，只是部分資料被刪除）。
+ 我們測試**訓練跟測試用同 cohort** 會不會因 data leakage 而虛胖 accuracy。訓練在 `1-1_0_complete.csv` (Cohort B)，測試在 Cohort B 的缺失版本（同樣 300 病人，只是部分資料被刪除）。
+<img width="985" height="127" alt="image" src="https://github.com/user-attachments/assets/5f99d32e-508b-4c06-becf-243d97b044ee" />
 
 #### What we found | 我們發現
 
-**English:** Surprisingly, the **leakage advantage is essentially zero** (mean +0.1%, range -0.7% to +1.3%, std 0.6%). The model trained on Cohort B and the model trained on Cohort C produce nearly identical results on the same test data.
+ Surprisingly, the **leakage advantage is essentially zero** (mean +0.1%, range -0.7% to +1.3%, std 0.6%). The model trained on Cohort B and the model trained on Cohort C produce nearly identical results on the same test data.
 
-**中文：** 出乎意料，**leakage 優勢幾乎是零**（平均 +0.1%，範圍 -0.7% 到 +1.3%，標準差 0.6%）。訓練在 Cohort B 跟訓練在 Cohort C 的模型在同樣測試資料上幾乎一樣。
+出乎意料，**leakage 優勢幾乎是零**（平均 +0.1%，範圍 -0.7% 到 +1.3%，標準差 0.6%）。訓練在 Cohort B 跟訓練在 Cohort C 的模型在同樣測試資料上幾乎一樣。
+<img width="203" height="421" alt="image" src="https://github.com/user-attachments/assets/69965013-0ae2-4e63-84e2-4587b416ec02" />
+
 
 #### How we interpret it | 解讀
 
-**English:** We find that K-means with summary features does not memorise individual patients — it learns group-level cluster boundaries that are reproducible across cohorts. Additionally, missing data destroys patient-level fingerprints: even if the model "remembered" patient A, their 99%-missing feature vector looks like a different person.
+We find that K-means with summary features does not memorise individual patients — it learns group-level cluster boundaries that are reproducible across cohorts. Additionally, missing data destroys patient-level fingerprints: even if the model "remembered" patient A, their 99%-missing feature vector looks like a different person.
 
 This null result confirms that **our cross-cohort design (in the main analysis) is methodologically defensible** without overpaying for it. It is a sanity check, not a smoking gun.
 
-**中文：** 我們發現 K-means + 統計摘要特徵**不會記住個別病人**，學的是「組別之間的邊界」，這個邊界在不同 cohort 間是可重現的。而且缺失資料破壞了病人的「身分證」：即使模型記得病人 A，他 99% 缺失的特徵向量看起來像不同人。
+ 我們發現 K-means + 統計摘要特徵**不會記住個別病人**，學的是「組別之間的邊界」，這個邊界在不同 cohort 間是可重現的。而且缺失資料破壞了病人的「身分證」：即使模型記得病人 A，他 99% 缺失的特徵向量看起來像不同人。
 
 這個 null result 確認**主分析的跨 cohort 設計在方法學上是站得住腳的**，而且沒「過度設計」。
 
@@ -302,7 +308,7 @@ This null result confirms that **our cross-cohort design (in the main analysis) 
 
 ### Performance on Complete Data | 完整資料表現
 
-**English:** We develop our final 6-feature model (Phase A) and find:
+ We develop our final 6-feature model (Phase A) and find:
 
 | Metric | Phase A (6 features) | Blooper 1 (8 features) |
 |---|---|---|
@@ -311,7 +317,7 @@ This null result confirms that **our cross-cohort design (in the main analysis) 
 | ARI (training) | 0.83 | 0.72 |
 | ARI (external) | 0.85 | 0.77 |
 
-**中文：** 我們發展的最終 6-feature 模型（Phase A）：
+ 我們發展的最終 6-feature 模型（Phase A）：
 
 | 指標 | Phase A (6 features) | Blooper 1 (8 features) |
 |---|---|---|
@@ -320,9 +326,12 @@ This null result confirms that **our cross-cohort design (in the main analysis) 
 | ARI (訓練) | 0.83 | 0.72 |
 | ARI (外部) | 0.85 | 0.77 |
 
+<img width="536" height="326" alt="image" src="https://github.com/user-attachments/assets/e6466a45-29a6-4d7a-8bcb-86b7919b8003" />
+
+
 ### Missing Data Sensitivity | 缺失資料敏感性
 
-**English:** We find that Phase A is remarkably robust to missing data:
+We find that Phase A is remarkably robust to missing data:
 
 | Missingness | MAR | MCAR | MNAR |
 |---|---|---|---|
@@ -344,7 +353,7 @@ This null result confirms that **our cross-cohort design (in the main analysis) 
 
 4. **There is no clean "collapse point"** within the tested range. To find one, you would need to test at >99% (where each patient has fewer than 4 data points), or to combine multiple stressors (e.g. MAR + noise).
 
-**中文：** 我們發現 Phase A 對缺失資料極度穩健（如上表）。
+我們發現 Phase A 對缺失資料極度穩健（如上表）。
 
 **主要發現：**
 
@@ -358,7 +367,7 @@ This null result confirms that **our cross-cohort design (in the main analysis) 
 
 ### Sensitivity Analysis: Why Is the Model So Stable? | 為什麼模型這麼穩定？
 
-**English:** We design three perturbation experiments to identify what makes the main model robust.
+We design three perturbation experiments to identify what makes the main model robust.
 
 #### Experiment A: Using only `early_speed_log` (1 feature)
 
@@ -399,7 +408,7 @@ We rank the features by their **contribution to robustness**:
 | 5 | `variability` | Standard deviation → noisier estimates under missingness |
 | 6 | `early_speed_log` | Slope of first 60 days → most diagnostic in complete data, but most fragile under MAR |
 
-**中文：** 我們設計三個 perturbation 實驗找出模型穩定性的來源。
+我們設計三個 perturbation 實驗找出模型穩定性的來源。
 
 **Experiment A**：只用 `early_speed_log`（1 個特徵）→ MAR 99% 缺失時 accuracy 崩到 30-40%（接近隨機）。
 > 證明**主模型的穩健性來自特徵冗餘** —— 多個特徵互相補足。
@@ -422,11 +431,11 @@ We rank the features by their **contribution to robustness**:
 
 ---
 
-## Summary in One Paragraph | 一段話總結
+## Summary  | 一段話總結
 
-**English:** We develop a K-means clustering pipeline with 6 engineered features for identifying post-treatment recovery trajectory groups. Our main result (Phase A) achieves ~95% accuracy on complete external validation data and remains >87% accurate under most missingness scenarios up to 99%, with the notable exception of MAR mechanism at high missingness (drops to ~75% at 90%+ MAR). We find that this robustness is genuine but contingent on (1) using statistical summary features over long windows (`max_steps`, `mid_plateau`, `late_level`), (2) the clean nature of simulated data, and (3) the well-separated cluster structure produced by the simulator. Our diagnostic methodology — checking post-standardisation std, group monotonicity, and feature skewness — caught three feature problems in our initial 8-feature attempt (Blooper 1) and improved both baseline accuracy and missingness robustness when corrected. Our cross-cohort design was empirically validated through a leakage demonstration (Blooper 2), which showed negligible inflation from same-cohort training, confirming that K-means with summary features does not memorise individual patients. For clinical translation, we recommend treating the reported >95% accuracy as an optimistic upper bound and budgeting for ~80–88% baseline in realistic noisy settings.
+ We develop a K-means clustering pipeline with 6 engineered features for identifying post-treatment recovery trajectory groups. Our main result (Phase A) achieves ~95% accuracy on complete external validation data and remains >87% accurate under most missingness scenarios up to 99%, with the notable exception of MAR mechanism at high missingness (drops to ~75% at 90%+ MAR). We find that this robustness is genuine but contingent on (1) using statistical summary features over long windows (`max_steps`, `mid_plateau`, `late_level`), (2) the clean nature of simulated data, and (3) the well-separated cluster structure produced by the simulator. Our diagnostic methodology — checking post-standardisation std, group monotonicity, and feature skewness — caught three feature problems in our initial 8-feature attempt (Blooper 1) and improved both baseline accuracy and missingness robustness when corrected. Our cross-cohort design was empirically validated through a leakage demonstration (Blooper 2), which showed negligible inflation from same-cohort training, confirming that K-means with summary features does not memorise individual patients. For clinical translation, we recommend treating the reported >95% accuracy as an optimistic upper bound and budgeting for ~80–88% baseline in realistic noisy settings.
 
-**中文：** 我們發展了一個 K-means 分群 pipeline，用 6 個工程特徵來識別治療後恢復軌跡的組別。主結果（Phase A）在完整外部驗證資料上達到 ~95% accuracy，且在 99% 以下的大部分缺失情境下都維持 >87%，唯一例外是 MAR 在高缺失（90%+）會掉到 ~75%。我們發現這個穩健性是真實的，但依賴於 (1) 使用長時間窗口的統計摘要特徵（`max_steps`, `mid_plateau`, `late_level`）、(2) 模擬器資料的乾淨、(3) 模擬器產生的良好分離 cluster 結構。我們的 diagnostic methodology（檢查標準化後的 std、組間單調性、特徵偏度）在初始的 8-feature 嘗試（Blooper 1）發現了三個特徵問題，修正後不只 baseline accuracy 改善，缺失穩健性也改善了。我們的跨 cohort 設計透過 leakage 示範（Blooper 2）獲得實證驗證：同 cohort 訓練的虛胖效應幾乎為零，確認 K-means + 摘要特徵不會記住個別病人。臨床應用上我們建議把報告的 >95% accuracy 當作樂觀的上界，在真實雜訊環境下預期 ~80-88% baseline。
+我們發展了一個 K-means 分群 pipeline，用 6 個工程特徵來識別治療後恢復軌跡的組別。主結果（Phase A）在完整外部驗證資料上達到 ~95% accuracy，且在 99% 以下的大部分缺失情境下都維持 >87%，唯一例外是 MAR 在高缺失（90%+）會掉到 ~75%。我們發現這個穩健性是真實的，但依賴於 (1) 使用長時間窗口的統計摘要特徵（`max_steps`, `mid_plateau`, `late_level`）、(2) 模擬器資料的乾淨、(3) 模擬器產生的良好分離 cluster 結構。我們的 diagnostic methodology（檢查標準化後的 std、組間單調性、特徵偏度）在初始的 8-feature 嘗試（Blooper 1）發現了三個特徵問題，修正後不只 baseline accuracy 改善，缺失穩健性也改善了。我們的跨 cohort 設計透過 leakage 示範（Blooper 2）獲得實證驗證：同 cohort 訓練的虛胖效應幾乎為零，確認 K-means + 摘要特徵不會記住個別病人。臨床應用上我們建議把報告的 >95% accuracy 當作樂觀的上界，在真實雜訊環境下預期 ~80-88% baseline。
 
 # RESULT
 ## Final Result
