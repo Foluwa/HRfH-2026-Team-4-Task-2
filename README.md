@@ -149,6 +149,8 @@ We **lock the model after training** using `joblib.dump()`. All subsequent uses 
 <img width="467" height="65" alt="image" src="https://github.com/user-attachments/assets/6d375c9f-84c6-46d7-acd8-24fe1f1c254f" />
 
 <img width="472" height="63" alt="image" src="https://github.com/user-attachments/assets/8d140111-0c71-42ce-9819-1e270658c996" />
+<img width="1200" height="1600" alt="WhatsApp Image 2026-05-15 at 4 33 30 AM" src="https://github.com/user-attachments/assets/df893d31-a3d5-4c41-9bb3-feaf475e1f82" />
+
 
 ### Sensitivity Analysis | 敏感性分析
 To verify that our main result's robustness reflects real model quality rather than artifacts, we develop three perturbation experiments in `Sensitivity_Experiments.ipynb`:
