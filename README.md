@@ -1,5 +1,8 @@
 # HRfH-2026-Team-4-Task-2
-# Phase 3: 13 Missing Data Datasets + 2 Complete Training/Testing Sets
+# Final Reslut
+<img width="580" height="363" alt="image" src="https://github.com/user-attachments/assets/85f756de-8f85-4fdd-b2e9-5ed6955f0356" />
+
+# 13 Missing Data Datasets + 2 Complete Training/Testing Sets
 
 ## Design Rationale
 
