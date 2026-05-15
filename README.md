@@ -4,7 +4,7 @@
 
 We were asked to develop an analysis approach that uses daily step counts to identify post-treatment recovery trajectory groups (fast, moderate, slow), and to assess how recovery group identification changes under different missingness settings.
 
-an online simulator (Shiny) that generates 365-day daily step count trajectories with configurable missingness mechanisms and severities was provided. We were given no underlying simulator code, only the output CSV files.
+an online simulator (Shiny) [https://hrfh-hackathon-2026.shinyapps.io/hackathon2026/] that generates 365-day daily step count trajectories with configurable missingness mechanisms and severities was provided. We were given no underlying simulator code, only the output CSV files.
 
 The four guiding questions from the brief:
 
@@ -16,7 +16,7 @@ The four guiding questions from the brief:
 
 我們的任務是發展一個分析方法，用每日步數識別治療後的恢復軌跡分組（fast 快、moderate 中、slow 慢），並評估在不同缺失資料情境下，組別識別的效能如何變化。
 
-主辦方提供了一個 Shiny 線上模擬器，產生 365 天的每日步數軌跡，可以設定不同的缺失機制與嚴重程度。我們只有 CSV 輸出檔，沒有模擬器原始碼。
+主辦方提供了一個 Shiny 線上模擬器 [https://hrfh-hackathon-2026.shinyapps.io/hackathon2026/]，產生 365 天的每日步數軌跡，可以設定不同的缺失機制與嚴重程度。我們只有 CSV 輸出檔，沒有模擬器原始碼。
 
 要回答的四個問題：
 
@@ -129,6 +129,10 @@ After standardisation (StandardScaler fitted on training only), K-means is train
 | Phase 3 | 21 missing-data CSV files | Sensitivity to missingness | Cohort B with missingness applied |
 
 Critical: the **training cohort (C) is different from the testing cohort (B)**. The Phase 3 missing-data files are derived from Cohort B, so they share the same underlying patients as Phase 2 (just with data removed), but never appear in the training data.
+<img width="462" height="73" alt="image" src="https://github.com/user-attachments/assets/902ad1e1-5385-4007-a174-264ac0d1ddd5" />
+<img width="472" height="63" alt="image" src="https://github.com/user-attachments/assets/8d140111-0c71-42ce-9819-1e270658c996" />
+
+
 
 We **lock the model after training** using `joblib.dump()`. All subsequent uses (Phases 2 and 3) use `joblib.load()` followed by `scaler.transform()` and `kmeans.predict()` — never `fit_transform()` or `fit_predict()`. This guarantees the model never sees test data during training.
 
