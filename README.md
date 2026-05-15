@@ -288,7 +288,7 @@ We find that Phase A is remarkably robust to missing data:
 4. **There is no clean "collapse point"** within the tested range. To find one, you would need to test at >99% (where each patient has fewer than 4 data points), or to combine multiple stressors (e.g. MAR + noise).
 
 <!-- <img width="958" alt="Phase A degradation curves" src="https://github.com/user-attachments/assets/2798e5fb-0444-4d50-beff-5631ef406b19" /> -->
-<img width="958" alt="Phase A degradation curves" src="images/kmeans_recovery_image.png" />
+<img width="958" alt="Phase A degradation curves" src="https://raw.githubusercontent.com/Foluwa/HRfH-2026-Team-4-Task-2/main/images/kmeans_recovery_image.png" />
 
 <img width="762" alt="Phase A heatmap" src="https://github.com/user-attachments/assets/e3353e25-67e4-4d59-95a5-96dc8b1f48de" />
 
